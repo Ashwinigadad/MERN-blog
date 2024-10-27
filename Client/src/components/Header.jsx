@@ -58,7 +58,7 @@ export default function Header() {
         <Navbar.Collapse>
           <Navbar.Link active={path==='/projects'} as={'div'}>
             <Link to='/projects'>
-            projects
+            Projects
             </Link>
           </Navbar.Link>
         </Navbar.Collapse>
