@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js'
 import authRoutes from './routes/auth.route.js';
 
-dotenv.config();
+dotenv.config({path:'/'});
 mongoose.connect("mongodb+srv://tangevvacse:qwert2004@mern-blog.rpq6m.mongodb.net/mern-blog?retryWrites=true&w=majority&appName=mern-blog")
 .then(()=>{
     console.log("Mongodb is connected");
@@ -22,3 +22,14 @@ app.listen(3000,()=>{
 
 app.use('/api',userRoutes);
 app.use('/auth',authRoutes);
+
+app.use((err,req,res,next)=>{
+    const statucode = err.statucode || 500;
+    const message = err.message || 'internal server error';
+
+    res.status(statucode).json({
+        success:false,
+        statucode,
+        message
+    })
+})

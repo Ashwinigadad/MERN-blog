@@ -22,6 +22,7 @@ export default function Header() {
           type='text'
           placeholder='search...'
           rightIcon={AiOutlineSearch}
+          className='flex'
         />
       </form>
       <Button className='w-12 h-10 lg:hidden' color='grey' pill>
