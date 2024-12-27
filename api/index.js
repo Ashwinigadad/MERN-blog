@@ -1,35 +1,50 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from './routes/user.route.js'
+import cors from 'cors'; // Import CORS middleware
+import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 
-dotenv.config({path:'/'});
-mongoose.connect("mongodb+srv://tangevvacse:qwert2004@mern-blog.rpq6m.mongodb.net/mern-blog?retryWrites=true&w=majority&appName=mern-blog")
-.then(()=>{
-    console.log("Mongodb is connected");
-})
-.catch((err)=>{
-    console.log(err);
-})
-const app=express();
+dotenv.config();
+
+console.log(process.env.MONGO);
+
+mongoose
+  .connect(process.env.MONGO)
+  .then(() => {
+    console.log("MongoDB is connected");
+  })
+  .catch((err) => {
+    console.error("Database connection error:", err);
+  });
+
+const app = express();
+
+// Use CORS middleware
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow requests from frontend
+  credentials: true,              // Allow credentials like cookies
+}));
+
 app.use(express.json());
 
-app.listen(3000,()=>{
-    console.log(`server listening on port 3000`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server listening on port ${process.env.PORT}`);
+});
 
-})
+// Routes
+app.use('/api', userRoutes);
+app.use('/auth', authRoutes);
 
-app.use('/api',userRoutes);
-app.use('/auth',authRoutes);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  const statuscode = err.statuscode || 500;
+  const message = err.message || 'Internal server error';
 
-app.use((err,req,res,next)=>{
-    const statucode = err.statucode || 500;
-    const message = err.message || 'internal server error';
-
-    res.status(statucode).json({
-        success:false,
-        statucode,
-        message
-    })
-})
+  console.error("Error details:", err); // Log the error details
+  res.status(statuscode).json({
+    success: false,
+    statuscode,
+    message,
+  });
+});
